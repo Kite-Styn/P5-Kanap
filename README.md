@@ -1,6 +1,6 @@
 # Kanap #
 
-https://kite-styn.github.io/P5-Kanap/front/html/index.html
+[Site](https://kite-styn.github.io/P5-Kanap/front/html/index.html)
 
 This is the front end and back end server for Project 5 of the Web Developer path.
 
