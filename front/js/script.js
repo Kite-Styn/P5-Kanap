@@ -1,4 +1,4 @@
-fetch("http://localhost:3000/api/products")
+fetch("https://kite-styn.github.io/P5-Kanap/back/models/Product.js")
 .then(function(res) {
     if (res.ok) {
       return res.json();
