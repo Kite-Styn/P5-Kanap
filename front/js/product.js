@@ -1,16 +1,6 @@
 //Récupération de l'ID dans l'url avec URLSearchParams.
 var url = new URL(window.location.href);
 var currentId = url.searchParams.get("id");
-document.getElementById("title").innerHTML=currentId;
-
-/* Alt
-var url = new URL(window.location.href);
-var search_params = new URLSearchParams(url.search);
-if (search_params.has("id")) {
-var currentId = search_params.get("id");
-};
-document.getElementById("price").innerHTML=currentId;
-*/
 
 //Appel de l'API pour recevoir les données du produit possédant l'ID récupéré et ajout de ses valeurs dans le html.
 fetch(`http://localhost:3000/api/products/${currentId}`)
@@ -20,17 +10,21 @@ fetch(`http://localhost:3000/api/products/${currentId}`)
     }
 })
 .then(function(value) {
-    document.getElementById("price").innerHTML=value.price;
-    /*var currentIndex = value.findIndex(i => i._id === currentId);
-    var currentProduct = value[currentIndex];
-    document.getElementById("price").innerHTML=currentIndex;*/
-    /* Alt
-    for(var i = 0; i < value.length; i++) {
-        if (value[i]._id === currentId) {
-            var currInd = i;
-            document.getElementById("price").innerHTML=currInd;
-            break;
-        }
+    document.getElementById("title").textContent=value.name;
+    document.getElementById("price").textContent=value.price;
+    document.getElementById("description").textContent=value.description;
+    let imageProduit = document.createElement("img");
+    imageProduit.setAttribute("src",`${value.imageUrl}`);
+    imageProduit.setAttribute("alt",`${value.altTxt}`);
+    document.getElementsByClassName("item__img")[0].appendChild(imageProduit);
+    let colorOptions = document.getElementById("colors");
+    for (i in value.colors) {
+        let newColor = document.createElement("option");
+        newColor.setAttribute("value",value.colors[i]);
+        newColor.textContent = value.colors[i];
+        colorOptions.appendChild(newColor);
     }
-    */
 })
+.catch(function(err) {
+    // Une erreur est survenue
+});
