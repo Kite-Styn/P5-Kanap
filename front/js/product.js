@@ -13,10 +13,10 @@ fetch(`http://localhost:3000/api/products/${currentId}`)
     document.getElementById("title").textContent=value.name;
     document.getElementById("price").textContent=value.price;
     document.getElementById("description").textContent=value.description;
-    let imageProduit = document.createElement("img");
-    imageProduit.setAttribute("src",`${value.imageUrl}`);
-    imageProduit.setAttribute("alt",`${value.altTxt}`);
-    document.getElementsByClassName("item__img")[0].appendChild(imageProduit);
+    let imageProduct = document.createElement("img");
+    imageProduct.setAttribute("src",`${value.imageUrl}`);
+    imageProduct.setAttribute("alt",`${value.altTxt}`);
+    document.getElementsByClassName("item__img")[0].appendChild(imageProduct);
     let colorOptions = document.getElementById("colors");
     for (i in value.colors) {
         let newColor = document.createElement("option");
@@ -26,5 +26,34 @@ fetch(`http://localhost:3000/api/products/${currentId}`)
     }
 })
 .catch(function(err) {
-    // Une erreur est survenue
+    console.log(err)
 });
+
+//Ajout du produit au panier
+function addToCart() {
+    //Paramètres actuels du produit
+    let currentProduct = {
+        id : currentId,
+        color : document.getElementById("colors").value,
+        amount : document.getElementById("quantity").value
+    };
+    let cart = [];
+    //Vérifie si il y a déja le produit dans le panier avec la même couleur pour ne modifier que la quantité
+    if (localStorage.getItem("cart")) {
+        cart = JSON.parse(localStorage.getItem("cart"));
+        for (i in cart) {
+            if (cart[i].id == currentProduct.id && cart[i].color == currentProduct.color) {
+                let newAmount = parseInt(cart[i].amount) + parseInt(currentProduct.amount);
+                cart[i].amount = newAmount;
+                localStorage.setItem("cart", JSON.stringify(cart));
+                return
+            }
+        };
+    };
+    if (currentProduct.color != "" && currentProduct.amount > 0) {
+        cart.push(currentProduct);
+        localStorage.setItem("cart", JSON.stringify(cart))
+    }
+}
+
+document.getElementById("addToCart").addEventListener("click", addToCart)
