@@ -4,11 +4,10 @@ cart = JSON.parse(sessionStorage.getItem("cart"));
 let currentProduct = {
 
 };
-//let ind = 0;
 
+//Ajoute le html avec les valeurs retournées par fetch
 function displayProduct(value) {
     currentProduct = cart[i];
-    //ind += 1;
     let newTag = document.createElement("article");
     newTag.setAttribute("class","cart__item");
     newTag.setAttribute("data-id",value._id);
@@ -76,6 +75,7 @@ function displayProduct(value) {
     target[target.length-1].appendChild(newTag);
 }
 
+//Calcule la quantité totale des produits dans le panier
 function totalQuantity() {
     let totalQty = 0;
     let numbers = document.querySelectorAll(".itemQuantity");
@@ -89,7 +89,8 @@ function totalQuantity() {
     document.querySelector("#totalQuantity").textContent = totalQty;
 }
 
-function calculateTotal() {
+//Calcule le prix total des produits dans le panier
+function totalPrice() {
     let cartProducts = document.querySelectorAll(".cart__item");
     let totalPrice = 0;
     for (let i = 0; i < cartProducts.length; i++) {
@@ -101,15 +102,16 @@ function calculateTotal() {
     document.querySelector("#totalPrice").textContent = totalPrice;
 }
 
-function storeNewCart() {
-    cartLength = cart.length;
+//Remplace les données stockées par celles de la page
+function storeNewCart(length) {
+    let cartLength = length;
     cart = [];
     for (let i = 0; i < cartLength; i++) {
         let updateProduct = {
-        id : "",
-        color : "",
-        quantity : ""
-    };
+            id : "",
+            color : "",
+            quantity : ""
+        };
         updateProduct.id = document.querySelectorAll(".cart__item")[i].dataset.id;
         updateProduct.color = document.querySelectorAll(".cart__item")[i].dataset.color;
         updateProduct.quantity = document.querySelectorAll(".itemQuantity")[i].value;
@@ -120,16 +122,35 @@ function storeNewCart() {
     sessionStorage.setItem("cart", JSON.stringify(cart))
 }
 
+//Supprime un produit du panier et lance les fonctions de recalcul et de stockage
+function removeFromCart() {
+    let cartLength = cart.length;
+    for (let i = 0; i < cartLength; i++) {
+        document.querySelectorAll(".deleteItem")[i].addEventListener("click", function() {
+            let elt = document.querySelectorAll(".deleteItem")[i].closest(".cart__item");
+            console.log(elt);
+            elt.remove();
+            storeNewCart(cart.length-1);
+            totalQuantity();
+            totalPrice()
+        })
+    }
+    
+}
+
+//Reaction dynamique à la modification ou suppression des produits
 function dynamicChange() {
     for (let i = 0; i < cart.length; i++) {
         document.querySelectorAll(".itemQuantity")[i].addEventListener("change", function() {
         totalQuantity();
-        calculateTotal();
-        storeNewCart()
+        totalPrice();
+        storeNewCart(cart.length)
         })
     }
+    removeFromCart()
 }
 
+//Affichage des produits du panier
 async function display() {
     for (i in cart) {
         let data = await fetch(`http://localhost:3000/api/products/${cart[i].id}`);
@@ -137,12 +158,12 @@ async function display() {
             throw new Error(message);
         }
         let value = await data.json();
-        displayProduct(await value);
+        displayProduct(value);
         console.log(currentProduct);
         console.log(value)
     }
     totalQuantity();
-    calculateTotal();
+    totalPrice();
     dynamicChange()
 }
 display();
