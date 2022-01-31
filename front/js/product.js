@@ -31,7 +31,7 @@ fetch(`http://localhost:3000/api/products/${currentId}`)
 
 //Fonction alerte choix après ajout au panier
 function afterAdd() {
-    if (confirm("Voulez-vous aller directement au panier?")) {
+    if (confirm("Le produit a bien été ajouté a votre panier.\nVoulez-vous aller directement au panier?")) {
         window.location.href="../html/cart.html"
     } else {
         window.location.href="../html/index.html"

@@ -141,7 +141,7 @@ function removeFromCart() {
 //Reaction dynamique à la modification ou suppression des produits
 function dynamicChange() {
     for (let i = 0; i < cart.length; i++) {
-        document.querySelectorAll(".itemQuantity")[i].addEventListener("change", function() {
+        document.querySelectorAll(".itemQuantity")[i].addEventListener("input", function() {
         totalQuantity();
         totalPrice();
         storeNewCart(cart.length)
@@ -168,9 +168,135 @@ async function display() {
 }
 display();
 
-//totalQuantity();
+const regexName = /^[^±!@£$%^&*_+¡€#¢§¶•ªº()"«\\/\{\}\[\]\~<>?:;|=.,\d\s]+$/;
+const regexAddress = /^[^±!@£$%^&*_+¡€#¢§¶•ªº()"«\\/\{\}\[\]\~<>?:;|=.]+$/;
+const regexCity = /^[^±!@£$%^&*_+¡€#¢§¶•ªº()"«\\/\{\}\[\]\~<>?:;|=.\d]+$/;
+const regexEmail = /^[\w-\.]+@([\w-]+\.)+[\w-]+$/;
 
-//displayProduct();
+let validFirstName = false;
+let validLastName = false;
+let validAddress = false;
+let validCity = false;
+let validEmail = false;
+
+let contact = {
+    firstName : "",
+    lastName : "",
+    address : "",
+    city : "",
+    email : ""
+};
+
+let products = [];
+
+//Gère la validité des données entrées dans le formulaire
+function formValidity() {
+    document.getElementById("firstName").addEventListener("input", function(e) {
+        if (regexName.test(e.target.value) && e.target.value != "") {
+            document.getElementById("firstNameErrorMsg").textContent = "";
+            validFirstName = true
+        } else {
+            document.getElementById("firstNameErrorMsg").textContent = "Veuillez entrer un prénom valide";
+            validFirstName = false
+        }
+    });
+    document.getElementById("lastName").addEventListener("input", function(e) {
+        if (regexName.test(e.target.value) && e.target.value != "") {
+            document.getElementById("lastNameErrorMsg").textContent = "";
+            validLastName = true
+        } else {
+            document.getElementById("lastNameErrorMsg").textContent = "Veuillez entrer un nom valide";
+            validLastName = false
+        }
+    });
+    document.getElementById("address").addEventListener("input", function(e) {
+        if (regexAddress.test(e.target.value) && e.target.value != "") {
+            document.getElementById("addressErrorMsg").textContent = "";
+            validAddress = true
+        } else {
+            document.getElementById("addressErrorMsg").textContent = "Veuillez entrer une addresse valide";
+            validAddress = false
+        }
+    });
+    document.getElementById("city").addEventListener("input", function(e) {
+        if (regexCity.test(e.target.value) && e.target.value != "") {
+            document.getElementById("cityErrorMsg").textContent = "";
+            validCity = true
+        } else {
+            document.getElementById("cityErrorMsg").textContent = "Veuillez entrer une ville valide";
+            validCity = false
+        }
+    });
+    document.getElementById("email").addEventListener("input", function(e) {
+        if (regexEmail.test(e.target.value) && e.target.value != "") {
+            document.getElementById("emailErrorMsg").textContent = "";
+            validEmail = true
+        } else {
+            document.getElementById("emailErrorMsg").textContent = "Veuillez entrer une addresse email valide";
+            validEmail = false
+        }
+    })
+}
+formValidity();
+
+function confirmForm() {
+    if (validFirstName == true && validLastName == true && validAddress == true && validCity == true && validEmail == true) {
+        contact.firstName = document.getElementById("firstName").value;
+        contact.lastName = document.getElementById("lastName").value;
+        contact.address = document.getElementById("address").value;
+        contact.city = document.getElementById("city").value;
+        contact.email = document.getElementById("email").value;
+    }
+}
+
+function confirmProducts() {
+    products = [];
+    for (i in cart) {
+        products.push(cart[i].id)
+    }
+}
+
+function confirmApi() {
+    if (contact.firstName != "" && products.length > 0) {
+        let order = {
+            contact,
+            products
+        };
+        fetch("http://localhost:3000/api/products/order", {
+            method : "POST",
+            headers : {
+                "Accept" : "application/json",
+                "Content-Type" : "application/json"
+            },
+            body : JSON.stringify(order)
+        })
+        .then(function(res) {
+            if (res.ok) {
+              return res.json();
+            }
+        })
+        .then(function(value) {
+            console.log(value);
+            sessionStorage.removeItem("cart");
+            window.location.href=`../html/confirmation.html?order_id=${value.orderId}`
+        })
+        .catch(function(err) {
+            console.log(err)
+        });
+    }
+}
+
+function confirmPurchase() {
+    const confirm = document.getElementById("order");
+    confirm.addEventListener("click", function(e) {
+        e.preventDefault();
+        confirmForm();
+        confirmProducts();
+        confirmApi()
+    })
+}
+confirmPurchase()
+
 
 /*Alt?
 for (i in cart) {
