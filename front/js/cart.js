@@ -284,6 +284,7 @@ function confirmApi() {
     }
 }
 
+//Ecoute le clique du bouton commander et lance les autres fonctions
 function confirmPurchase() {
     if (document.getElementById("cart__items") != null) {
         const confirm = document.getElementById("order");
