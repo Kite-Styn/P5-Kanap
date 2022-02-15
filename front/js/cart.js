@@ -243,6 +243,8 @@ function confirmForm() {
         contact.address = document.getElementById("address").value;
         contact.city = document.getElementById("city").value;
         contact.email = document.getElementById("email").value;
+    } else {
+        alert("Veuillez correctement remplir tous les champs du formulaire")
     }
 }
 
@@ -256,7 +258,7 @@ function confirmProducts() {
 
 //Envoie les détails de la commande à l'Api
 function confirmApi() {
-    if (contact.firstName != "" && products.length > 0) {
+    if (contact.firstName !== "" && products.length > 0) {
         let order = {
             contact,
             products
@@ -290,6 +292,10 @@ function confirmPurchase() {
         const confirm = document.getElementById("order");
         confirm.addEventListener("click", function(e) {
             e.preventDefault();
+            if (cart == null) {
+                alert("Le panier est vide");
+                return
+            }
             confirmForm();
             confirmProducts();
             confirmApi()
